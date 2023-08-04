@@ -23,7 +23,8 @@
         "magento/composer-dependency-version-audit-plugin": "~0.1",
         "magento/composer-root-update-plugin": "~2.0",
         "magento/product-community-edition": "2.4.6-p1",
-        "magento/quality-patches": "^1.1"
+        "magento/quality-patches": "^1.1",
+        "deployer/deployer": "^7.3"
     },
     "autoload": {
         "exclude-from-classmap": [
@@ -49,7 +50,6 @@
     "require-dev": {
         "allure-framework/allure-phpunit": "^2",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-        "deployer/deployer": "^7.3",
         "dg/bypass-finals": "^1.4",
         "friendsofphp/php-cs-fixer": "^3.8",
         "lusitanian/oauth": "^0.8",
