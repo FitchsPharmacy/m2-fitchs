@@ -1,0 +1,97 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      # - name: Install developer SSH Key
+      #   uses: shimataro/ssh-key-action@v2
+      #   with:
+      #     key: ${{ secrets.SSH_PRIVATE_KEY_DEV }}
+      #     name: id_rsa_developer
+      #     known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
+      #     config: |
+      #       Host developer
+      #         HostName ${{ secrets.SSH_HOST }}
+      #         Port ${{ secrets.SSH_PORT }}
+      #         User developerfitchs
+      #         IdentityFile ~/.ssh/id_rsa_developer
+      
+      # - name: Install staging SSH Key
+      #   uses: shimataro/ssh-key-action@v2
+      #   with:
+      #     key: ${{ secrets.SSH_PRIVATE_KEY_STAGE }}
+      #     name: id_rsa_staging
+      #     known_hosts: ${{ secrets.SSH_KNOWN_HOST }}
+      #     config: |
+      #       Host staging
+      #         HostName ${{ secrets.SSH_HOST }}
+      #         Port ${{ secrets.SSH_PORT }}
+      #         User stagingfitchs
+      #         IdentityFile ~/.ssh/id_rsa_staging
+
+  DeployDev:
+    name: Deploy to Dev 
+    if: github.event.ref == 'refs/heads/develop'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment: 
+      name: developer
+    env:
+      SSH_USER: developerfitchs
+      SSH_KEY_DEV: ${{ secrets.SSH_PRIVATE_KEY_DEV }}
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY_DEV" > ~/.ssh/developer.key
+          chmod 600 ~/.ssh/developer.key
+          cat >>~/.ssh/config <<END
+          Host developer
+            HostName $SSH_HOST
+            User $SSH_USER
+            Port $SSH_PORT
+            IdentityFile ~/.ssh/developer.key
+            StrictHostKeyChecking no
+          END
+      - name: Deploy
+        run: 
+          ssh -o StrictHostKeyChecking=no developer 'cd /home/developerfitchs && sh deploy.sh developer'
+
+  DeployStaging:
+    name: Deploy to Staging 
+    if: github.event.ref == 'refs/heads/staging'
+    needs: [Build]
+    runs-on: ubuntu-latest
+    environment: 
+      name: staging
+    steps:
+      - name: Deploy
+        run: |
+          ssh staging "cd /home/stagingfitchs && bash deploy.sh staging"
+
+  DeployProd:
+    name: Deploy to Production 
+    needs: [DeployStaging]
+    runs-on: ubuntu-latest
+    environment: 
+      name: production
+    steps:
+      - name: Deploy
+        run: |
+          ssh -p 9538 fitchs@fitchs.au "cd /home/fitchs && bash deploy.sh develop"
+
+
