@@ -40,7 +40,7 @@ jobs:
       - name: Deploy artifact
         uses: deployphp/action@v1
         with:
-          private-key: ${{ secrets.SSH_PRIVATE_KEY_STAGE }}
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           dep: artifact:deploy branch=${{ github.head_ref || github.ref_name }}
 
       - name: Upload artifact
