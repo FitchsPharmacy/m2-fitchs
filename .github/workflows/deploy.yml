@@ -30,9 +30,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-      
-      - name: Add HTTP basic auth credentials
-        run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
 
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --optimize-autoloader
@@ -43,7 +40,7 @@ jobs:
       - name: Deploy artifact
         uses: deployphp/action@v1
         with:
-          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          private-key: ${{ secrets.SSH_PRIVATE_KEY_STAGE }}
           dep: artifact:deploy branch=${{ github.head_ref || github.ref_name }}
 
       - name: Upload artifact
