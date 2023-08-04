@@ -409,6 +409,15 @@
             'reference' => '1c968e542d8843d7cd71de3c5c9c3ff3ad71a1db',
             'dev_requirement' => true,
         ),
+        'deployer/deployer' => array(
+            'pretty_version' => 'v7.3.1',
+            'version' => '7.3.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../deployer/deployer',
+            'aliases' => array(),
+            'reference' => 'c5c5e79d4e57445918ed24a9cdd3d85b0f261de3',
+            'dev_requirement' => true,
+        ),
         'dg/bypass-finals' => array(
             'pretty_version' => 'v1.4.1',
             'version' => '1.4.1.0',
